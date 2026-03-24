@@ -1,0 +1,6 @@
+services:
+  ansible:
+    build: .
+    volumes:
+      - .:/ansible:Z
+    command: -i "localhost," -c local modify_config.yml

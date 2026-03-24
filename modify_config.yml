@@ -1,0 +1,29 @@
+---
+- name: Fresh Web.Config Generation
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: 1. Delete the old modified file if it exists
+      file:
+        path: web.config.modified
+        state: absent
+
+    - name: 2. Create a fresh copy from the original template
+      copy:
+        src: web.config
+        dest: web.config.modified
+        force: yes
+
+    - name: 3. Update Environment to Production
+      community.general.xml:
+        path: web.config.modified
+        xpath: /configuration/appSettings/add[@key='Environment']
+        attribute: value
+        value: "Production"
+
+    - name: 4. Update Connection String
+      community.general.xml:
+        path: web.config.modified
+        xpath: /configuration/connectionStrings/add[@name='MainDB']
+        attribute: connectionString
+        value: "Server=PROD-SQL-01;Database=LiveDB;Integrated Security=SSPI;"
